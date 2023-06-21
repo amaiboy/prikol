@@ -2,6 +2,7 @@
 #include <fstream>
 #include <cstring>
 #include <windows.h>
+#include <string>
 
 using namespace std;
 
@@ -14,8 +15,8 @@ struct ID3Tag
     char artist[30];
     char album[30];
     char year[4];
-    char description[28];
-    char genre[2];
+    char description[30];
+    unsigned char genre;
 };
 
 streamoff id3_file_offset(ifstream& file)
@@ -51,7 +52,7 @@ int main()
         cout << "Album:       " << id3Tag->album << endl;
         cout << "Year:        " << std::string(id3Tag->year, 4) << endl;
         cout << "Description: " << id3Tag->description << endl;
-        cout << "Genre:       " << id3Tag->genre << endl;
+        cout << "Genre:       " << unsigned short(id3Tag->genre) << endl;
     }
     file.close();
 
@@ -93,23 +94,29 @@ int main()
             cout << "Enter new description: ";
             cin.getline(id3Tag_new.description, sizeof(id3Tag_new.description));
             cout << "Enter new genre: ";
-            cin.getline(id3Tag_new.genre, sizeof(id3Tag_new.genre));
+
+            int new_genre;
+            cin >> new_genre;
+            id3Tag_new.genre = unsigned char(new_genre);
+
             memcpy(newID3, &id3Tag_new, sizeof(id3Tag_new));
-            memcpy(buffer + fileSize - 128, newID3, 128);
-            
-            for (int i = 3; i < 128; i++) {
+            for (int i = 3; i < 127; i++) {
                 if (i == 3)
                     i += strlen(id3Tag_new.name);
                 if (i == 33)
                     i += strlen(id3Tag_new.artist);
                 if (i == 63)
                     i += strlen(id3Tag_new.album);
-                if (i == 97)
+                if (i == 93)
                     i += strlen(id3Tag_new.year);
-                if (i == 125)
-                    i += strlen(id3Tag_new.genre);
+                if (i == 97)
+                    i += strlen(id3Tag_new.description);
+               /* if (i == 127)
+                    i += 1;*/
                 newID3[i] = '\0';
             }
+            memcpy(buffer + fileSize - 128, newID3, 128);
+
             // Записываем измененный буфер в целевой файл
             targetFile.write(buffer, fileSize);
 
