@@ -38,11 +38,12 @@ streamoff id3_file_offset(ifstream& file)
     return file.tellg() - static_cast<streamoff>(ID3_MAX_SIZE);
 }
 
-void printID3Versions(const string& filename) {
+string printID3Versions(const string& filename) 
+{
     ifstream file(filename, ios::binary);
     if (!file.is_open()) {
         cout << "Не удалось открыть файл" << endl;
-        return;
+        return "0";
     }
 
     char header[10];
@@ -50,12 +51,12 @@ void printID3Versions(const string& filename) {
 
     if (file.gcount() < 10) {
         cout << "Неверный формат файла" << std::endl;
-        return;
+        return"0";
     }
 
     if (string(header, 3) != "ID3") {
         cout << "ID3 тег не найден" << std::endl;
-        return;
+        return "0";
     }
 
     cout << "Версии ID3-тегов:" << endl;
@@ -80,9 +81,11 @@ void printID3Versions(const string& filename) {
         if (buf[125] == '\0') {
             if (buf[126] != '\0') {
                 cout << "ID3v1.1" << endl;
+                return "v1.1";
             }
             else {
                 cout << "ID3v1.0" << endl;
+                return "v1";
             }
         }
     }
@@ -97,18 +100,32 @@ int main()
     cout << "Enter path:";
     getline(cin, mp3_name);
     
-    printID3Versions(mp3_name);
-
     ifstream file(mp3_name, ios::binary);
     if (!file)
     {
         cout << "Unable to open file for reading." << endl;
         return 1;
     }
-
-    cout << "Select ID3 version (V1/V1.1): ";
-    string ID3_controller;
-    cin >> ID3_controller;
+    int version_detection; 
+    string ID3_controller; 
+    cout << "you want to select the version manually or have the program detect it. (1-detect program), (2-manually):";
+    cin >> version_detection;
+    if (version_detection == 1) 
+    { 
+       ID3_controller = printID3Versions(mp3_name);
+   
+    }
+    else if (version_detection == 2)
+    { 
+        cout << "Select ID3 version (V1/V1.1): ";
+        cin >> ID3_controller; 
+    }
+    else 
+    {
+        cout << "Wrong variant";
+        return 1;
+    }
+    
     if (ID3_controller == "V1" || ID3_controller=="v1") {
         char buf[ID3_MAX_SIZE] = { 0 };
         file.seekg(id3_file_offset(file), ios::beg);
@@ -121,7 +138,7 @@ int main()
             cout << "Name:        " << id3Tag->name << endl;
             cout << "Artist:      " << id3Tag->artist << endl;
             cout << "Album:       " << id3Tag->album << endl;
-            cout << "Year:        " << std::string(id3Tag->year, 4) << endl;
+            cout << "Year:        " << string(id3Tag->year, 4) << endl;
             cout << "Description: " << id3Tag->description << endl;
             cout << "Genre:       " << unsigned short(id3Tag->genre) << endl;
         }
@@ -133,12 +150,12 @@ int main()
         cin >> controller;
         if (controller == 'Y' || controller == 'y') {
             cout << "Okay, let's change it!" << endl;
-            ifstream sourceFile(mp3_name, std::ios::binary);
-            ofstream targetFile("target.mp3", std::ios::binary);
+            ifstream sourceFile(mp3_name, ios::binary);
+            ofstream targetFile("target.mp3", ios::binary);
 
-            sourceFile.seekg(0, std::ios::end);
+            sourceFile.seekg(0, ios::end);
             streampos fileSize = sourceFile.tellg();
-            sourceFile.seekg(0, std::ios::beg);
+            sourceFile.seekg(0, ios::beg);
 
             char* buffer = new char[fileSize];
 
@@ -218,7 +235,7 @@ int main()
             cout << "Album:       " << id3Tag->album << endl;
             cout << "Year:        " << std::string(id3Tag->year, 4) << endl;
             cout << "Description: " << id3Tag->description << endl;
-            cout << "Track: " << unsigned short(id3Tag->Track) << endl;
+            cout << "Track:       " << unsigned short(id3Tag->Track) << endl;
             cout << "Genre:       " << unsigned short(id3Tag->genre) << endl;
         }
         file.close();
@@ -229,12 +246,12 @@ int main()
         if (controller == 'Y' || controller == 'y')
         {
             cout << "Okay, let's change it!" << endl;
-            ifstream sourceFile(mp3_name, std::ios::binary);
-            ofstream targetFile("target.mp3", std::ios::binary);
+            ifstream sourceFile(mp3_name, ios::binary);
+            ofstream targetFile("target.mp3", ios::binary);
 
-            sourceFile.seekg(0, std::ios::end);
+            sourceFile.seekg(0, ios::end);
             streampos fileSize = sourceFile.tellg();
-            sourceFile.seekg(0, std::ios::beg);
+            sourceFile.seekg(0, ios::beg);
 
             
             char* buffer = new char[fileSize];
@@ -307,9 +324,9 @@ int main()
         else
             return 0;
     }
-    else {
-        cout << "Wrong version!" << endl;
-        return 1;
+  else {
+      cout << "Wrong version!" << endl;
+      return 1;
     }
         
 }
