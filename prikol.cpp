@@ -38,14 +38,67 @@ streamoff id3_file_offset(ifstream& file)
     return file.tellg() - static_cast<streamoff>(ID3_MAX_SIZE);
 }
 
+void printID3Versions(const string& filename) {
+    ifstream file(filename, ios::binary);
+    if (!file.is_open()) {
+        cout << "Не удалось открыть файл" << endl;
+        return;
+    }
+
+    char header[10];
+    file.read(header, 10);
+
+    if (file.gcount() < 10) {
+        cout << "Неверный формат файла" << std::endl;
+        return;
+    }
+
+    if (string(header, 3) != "ID3") {
+        cout << "ID3 тег не найден" << std::endl;
+        return;
+    }
+
+    cout << "Версии ID3-тегов:" << endl;
+    if (header[3] == 3 && header[4] == 0) {
+        cout << "ID3v2.3" << endl;
+    }
+    else if (header[3] == 4 && header[4] == 0) {
+        cout << "ID3v2.4" << endl;
+    }
+
+    // Перемещаемся в конец файла и ищем ID3v1 тег
+    file.seekg(id3_file_offset(file), ios::beg);
+
+    char id3v1Header[3];
+    file.read(id3v1Header, 3);
+    if (string(id3v1Header, 3) == "TAG") {
+        file.seekg(0, ios::beg);
+        char buf[ID3_MAX_SIZE] = { 0 };
+        file.seekg(id3_file_offset(file), ios::beg);
+        file.read(buf, ID3_MAX_SIZE);
+
+        if (buf[125] == '\0') {
+            if (buf[126] != '\0') {
+                cout << "ID3v1.1" << endl;
+            }
+            else {
+                cout << "ID3v1.0" << endl;
+            }
+        }
+    }
+    file.close();
+}
 
 int main()
 {
-   
+    SetConsoleCP(1251);
+    SetConsoleOutputCP(1251);
     string mp3_name;
     cout << "Enter path:";
     getline(cin, mp3_name);
     
+    printID3Versions(mp3_name);
+
     ifstream file(mp3_name, ios::binary);
     if (!file)
     {
