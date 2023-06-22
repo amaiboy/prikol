@@ -99,15 +99,17 @@ int main()
     SetConsoleCP(1251);
     SetConsoleOutputCP(1251);
     string mp3_name;
-    cout << "Enter path:";
-    getline(cin, mp3_name);
-    
-    ifstream file(mp3_name, ios::binary);
-    if (!file)
+    ifstream file;
+    do
     {
-        cout << "Unable to open file for reading." << endl;
-        return 1;
-    }
+        cout << "Enter path:";
+        getline(cin, mp3_name);
+        file.open(mp3_name, ios::binary);
+        if (!file)
+        {
+            cout << "Unable to open file for reading, try again" << endl;
+        }
+    } while(!file);
     int version_detection; 
     string ID3_controller; 
     cout << "you want to select the version manually or have the program detect it. (1-detect program), (2-manually):";
