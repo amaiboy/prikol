@@ -187,18 +187,9 @@ int main()
             id3Tag_new.genre = unsigned char(new_genre);
 
             memcpy(newID3, &id3Tag_new, sizeof(id3Tag_new));
-            for (int i = 3; i < 127; i++) {
-                if (i == 3)
-                    i += strlen(id3Tag_new.name);
-                if (i == 33)
-                    i += strlen(id3Tag_new.artist);
-                if (i == 63)
-                    i += strlen(id3Tag_new.album);
-                if (i == 93)
-                    i += strlen(id3Tag_new.year);
-                if (i == 97)
-                    i += strlen(id3Tag_new.description);
-                newID3[i] = '\0';
+            for (int i = 3; i < 128; i++) {
+                if (newID3[i] == (-52))
+                    newID3[i] = '\0';
             }
             memcpy(buffer + fileSize - 128, newID3, 128);
 
@@ -290,21 +281,8 @@ int main()
 
             memcpy(newID3, &id3Tag_new, sizeof(id3Tag_new));
             for (int i = 3; i < 128; i++) {
-                if (i == 3)
-                    i += strlen(id3Tag_new.name);
-                if (i == 33)
-                    i += strlen(id3Tag_new.artist);
-                if (i == 63)
-                    i += strlen(id3Tag_new.album);
-                if (i == 93)
-                    i += strlen(id3Tag_new.year);
-                if (i == 97)
-                    i += strlen(id3Tag_new.description);
-                if (i == 126)
-                    i += 1;
-                if (i == 127)
-                    break;
-                newID3[i] = '\0';
+                if (newID3[i] == (-52))
+                    newID3[i] = '\0';
             }
             memcpy(buffer + fileSize - 128, newID3, 128);
 
