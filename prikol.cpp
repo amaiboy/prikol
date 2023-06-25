@@ -4,7 +4,6 @@
 #include <windows.h>
 #include <string>
 
-//test
 
 using namespace std;
 
