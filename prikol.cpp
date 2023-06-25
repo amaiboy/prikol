@@ -51,12 +51,12 @@ string printID3Versions(const string& filename)
     file.read(header, 10);
 
     if (file.gcount() < 10) {
-        cout << "Неверный формат файла" << std::endl;
+        cout << "Неверный формат файла" << endl;
         return"0";
     }
 
     if (string(header, 3) != "ID3") {
-        cout << "ID3 тег не найден" << std::endl;
+        cout << "ID3 тег не найден" << endl;
         return "0";
     }
 
@@ -227,7 +227,7 @@ int main()
             cout << "Name:        " << id3Tag->name << endl;
             cout << "Artist:      " << id3Tag->artist << endl;
             cout << "Album:       " << id3Tag->album << endl;
-            cout << "Year:        " << std::string(id3Tag->year, 4) << endl;
+            cout << "Year:        " << string(id3Tag->year, 4) << endl;
             cout << "Description: " << id3Tag->description << endl;
             cout << "Track:       " << unsigned short(id3Tag->Track) << endl;
             cout << "Genre:       " << unsigned short(id3Tag->genre) << endl;
