@@ -3,8 +3,6 @@
 #include <cstring>
 #include <windows.h>
 #include <string>
-
-
 using namespace std;
 
 #define ID3_MAX_SIZE 128
